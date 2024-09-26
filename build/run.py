@@ -397,7 +397,7 @@ WEBRTC_BUILD_TARGETS_MACOS_COMMON = [
     'api/task_queue:default_task_queue_factory',
     'sdk:native_api',
     'sdk:default_codec_factory_objc',
-    'pc:peerconnection',
+    'pc:peer_connection',
     'sdk:videocapture_objc',
 ]
 WEBRTC_BUILD_TARGETS = {
@@ -677,7 +677,7 @@ def build_webrtc(
                 'enable_dsyms=true',
                 'rtc_libvpx_build_vp9=true',
                 'rtc_enable_symbol_export=true',
-                'rtc_enable_objc_symbol_export=false',
+                'rtc_enable_objc_symbol_export=true',
                 'use_custom_libcxx=false',
                 'treat_warnings_as_errors=false',
                 'clang_use_chrome_plugins=false',
@@ -772,6 +772,23 @@ def build_webrtc(
              '-debug-symbols', os.path.join(webrtc_build_dir, 'WebRTC.dSYM'),
              '-output', os.path.join(webrtc_build_dir, 'WebRTC.xcframework')])
 
+        # 拷贝到CloudPlayPlus
+        dest_path = os.environ.get('CLOUDPLAYPLUS_WEBRTC_PATH', '/Users/zhuhaichao/Dev/cloudplayplus/cloudplayplus_stone/plugins/flutter-webrtc/macos')
+
+        # 确保目标路径存在
+        if not os.path.exists(dest_path):
+            print('CloudPlay plus not found in the path. Please set the env variable CLOUDPLAYPLUS_WEBRTC_PATH /Users/zhuhaichao/Dev/cloudplayplus/cloudplayplus_stone/plugins/flutter-webrtc/macos')
+            return
+
+        # 拷贝 WebRTC.xcframework 到目标路径
+        shutil.copytree(os.path.join(webrtc_build_dir, 'WebRTC.dSYM'),
+                        os.path.join(dest_path, 'WebRTC.dSYM'), dirs_exist_ok=True)
+
+        # 拷贝 WebRTC.framework 到目标路径
+        shutil.copytree(os.path.join(webrtc_build_dir, 'WebRTC.framework'),
+                        os.path.join(dest_path, 'WebRTC.framework'), dirs_exist_ok=True)
+
+        print(f'Framework has been copied to {dest_path}')
 
 def copy_headers(webrtc_src_dir, webrtc_package_dir, target):
     if target in ['windows_x86_64', 'windows_arm64']:
