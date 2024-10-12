@@ -10,10 +10,10 @@ python3 run.py build macos_arm64 --debug
 
 # Windows
 代理不行的时候
-Gclient llvm版本不对：手动下载然后拷贝到src\third_party\llvm-build\Release+Asserts
+gclient llvm版本不对：手动下载然后拷贝到src\third_party\llvm-build\Release+Asserts
 创建文件 cr_build_revision
 内容：llvmorg-19-init-8091-gab037c4f-1（gclient时的版本）
-然后按照libwebrtc的教程去build.
+然后按照libwebrtc的教程去build. 不要再跑gclient了 否则build文件夹会有报错信息
 
 gclint
 LASTCHANGE.committime 拷贝到 webrtc\src\build\util
