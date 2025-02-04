@@ -168,6 +168,23 @@ mkdir -p out/mac-x64-arm64-lib
 cp -R out/macOS-x64/WebRTC.framework out/mac-x64-arm64-lib/WebRTC.framework
 lipo -create -output out/mac-x64-arm64-lib/WebRTC.framework/WebRTC out/macOS-x64/WebRTC.framework/WebRTC out/macOS-arm64/WebRTC.framework/WebRTC
 ```
+签名问题:
+下面的方法都不行 正确的方法是合并可执行文件后 其他文件手动拷贝 按照原来的目录结构就ok
+
+zhuhaichao@zhuhaichaodeMacBook-Pro macOS-x64 % codesign --force --sign "Apple Development: Haichao Zhu (LATQUV8Y69)" WebRTC.framework/WebRTC
+zhuhaichao@zhuhaichaodeMacBook-Pro macOS-x64 % codesign --force --sign "Apple Development: Haichao Zhu (LATQUV8Y69)" WebRTC.framework      
+WebRTC.framework: replacing existing signature
+zhuhaichao@zhuhaichaodeMacBook-Pro macOS-x64 % codesign -vvv --deep --strict WebRTC.framework
+WebRTC.framework: valid on disk
+WebRTC.framework: satisfies its Designated Requirement
+这个方法build出来后运行会崩
+zhuhaichao@zhuhaichaodeMacBook-Pro macos % codesign --remove-signature WebRTC.framework 
+
+zhuhaichao@zhuhaichaodeMacBook-Pro macos % mkdir -p WebRTC.framework
+
+zhuhaichao@zhuhaichaodeMacBook-Pro macos % lipo -create -output WebRTC.framework/WebRTC WebRTC_x64.framework/WebRTC WebRTC_arm64.framework/WebRTC
+
+zhuhaichao@zhuhaichaodeMacBook-Pro macos % codesign --force --deep --strict --timestamp --sign "Apple Development: Haichao Zhu (LATQUV8Y69)" WebRTC.framework
 
 Merge the arm64 and arm libraries of iOS.
 
